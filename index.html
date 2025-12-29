@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Risk Dashboard - 暴落予兆・リスク指標監視</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <i class="fas fa-chart-line"></i>
+                    <h1>Market Risk Dashboard</h1>
+                </div>
+                <div class="header-info">
+                    <div class="last-update">
+                        <i class="fas fa-clock"></i>
+                        <span>最終更新: <span id="lastUpdate">2025-12-29 09:00:00</span></span>
+                    </div>
+                    <button class="refresh-btn" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i> 更新
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Alert Banner -->
+        <div class="alert-banner" id="alertBanner" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="alertMessage"></span>
+        </div>
+
+        <!-- Overview Cards -->
+        <section class="overview-section">
+            <h2 class="section-title">リスク指標サマリー</h2>
+            <div class="overview-grid">
+                <div class="overview-card" id="vixCard">
+                    <div class="card-header">
+                        <h3>VIX</h3>
+                        <span class="status-badge" id="vixStatus">安全</span>
+                    </div>
+                    <div class="card-value" id="vixValue">--</div>
+                    <div class="card-description">恐怖指数</div>
+                    <div class="card-threshold">しきい値: 30以上で警告</div>
+                </div>
+
+                <div class="overview-card" id="skewCard">
+                    <div class="card-header">
+                        <h3>SKEW</h3>
+                        <span class="status-badge" id="skewStatus">安全</span>
+                    </div>
+                    <div class="card-value" id="skewValue">--</div>
+                    <div class="card-description">テールリスク</div>
+                    <div class="card-threshold">しきい値: 145以上で警告</div>
+                </div>
+
+                <div class="overview-card" id="putCallCard">
+                    <div class="card-header">
+                        <h3>Put/Call比率</h3>
+                        <span class="status-badge" id="putCallStatus">安全</span>
+                    </div>
+                    <div class="card-value" id="putCallValue">--</div>
+                    <div class="card-description">市場センチメント</div>
+                    <div class="card-threshold">しきい値: 0.7以下で警告</div>
+                </div>
+
+                <div class="overview-card" id="hySpreadCard">
+                    <div class="card-header">
+                        <h3>HY Spread</h3>
+                        <span class="status-badge" id="hySpreadStatus">安全</span>
+                    </div>
+                    <div class="card-value" id="hySpreadValue">--</div>
+                    <div class="card-description">信用リスク</div>
+                    <div class="card-threshold">しきい値: 5.0%以上で警告</div>
+                </div>
+
+                <div class="overview-card" id="shillerCard">
+                    <div class="card-header">
+                        <h3>Shiller P/E</h3>
+                        <span class="status-badge" id="shillerStatus">安全</span>
+                    </div>
+                    <div class="card-value" id="shillerValue">--</div>
+                    <div class="card-description">株価割高感</div>
+                    <div class="card-threshold">しきい値: 30以上で警告</div>
+                </div>
+
+                <div class="overview-card" id="ma200Card">
+                    <div class="card-header">
+                        <h3>200日線乖離率</h3>
+                        <span class="status-badge" id="ma200Status">安全</span>
+                    </div>
+                    <div class="card-value" id="ma200Value">--</div>
+                    <div class="card-description">トレンド分析</div>
+                    <div class="card-threshold">しきい値: 0%以下で警告</div>
+                </div>
+
+                <div class="overview-card" id="fearGreedCard">
+                    <div class="card-header">
+                        <h3>Fear & Greed</h3>
+                        <span class="status-badge" id="fearGreedStatus">安全</span>
+                    </div>
+                    <div class="card-value" id="fearGreedValue">--</div>
+                    <div class="card-description">市場感情指標</div>
+                    <div class="card-threshold">しきい値: 25以下で警告</div>
+                </div>
+
+                <div class="overview-card" id="buffettCard">
+                    <div class="card-header">
+                        <h3>Buffett指数</h3>
+                        <span class="status-badge" id="buffettStatus">安全</span>
+                    </div>
+                    <div class="card-value" id="buffettValue">--</div>
+                    <div class="card-description">時価総額/GDP</div>
+                    <div class="card-threshold">しきい値: 150%以上で警告</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Overall Assessment -->
+        <section class="assessment-section">
+            <h2 class="section-title">総合評価</h2>
+            <div class="assessment-container">
+                <div class="assessment-header">
+                    <div class="risk-level" id="overallRiskLevel">
+                        <div class="risk-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="risk-info">
+                            <h3>市場リスクレベル</h3>
+                            <div class="risk-score" id="riskScore">--</div>
+                        </div>
+                    </div>
+                    <div class="warning-count">
+                        <div class="count-item danger">
+                            <span class="count-number" id="dangerCount">0</span>
+                            <span class="count-label">警告</span>
+                        </div>
+                        <div class="count-item warning">
+                            <span class="count-number" id="warningCount">0</span>
+                            <span class="count-label">注意</span>
+                        </div>
+                        <div class="count-item safe">
+                            <span class="count-number" id="safeCount">0</span>
+                            <span class="count-label">安全</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="assessment-comment">
+                    <h4><i class="fas fa-comment-dots"></i> 総合コメント</h4>
+                    <p id="overallComment">データを読み込み中...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Table -->
+        <section class="table-section">
+            <h2 class="section-title">詳細指標テーブル</h2>
+            <div class="table-container">
+                <table class="indicators-table">
+                    <thead>
+                        <tr>
+                            <th>指標名</th>
+                            <th>概要</th>
+                            <th>現在の値</th>
+                            <th>しきい値</th>
+                            <th>ステータス</th>
+                        </tr>
+                    </thead>
+                    <tbody id="indicatorsTableBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Charts Grid -->
+        <section class="charts-section">
+            <div class="charts-header">
+                <h2 class="section-title">履歴チャート</h2>
+                <div class="period-selector">
+                    <button class="period-btn" data-period="0.02" onclick="changePeriod(0.02)">1週間</button>
+                    <button class="period-btn" data-period="0.08" onclick="changePeriod(0.08)">1ヶ月</button>
+                    <button class="period-btn" data-period="0.5" onclick="changePeriod(0.5)">6ヶ月</button>
+                    <button class="period-btn" data-period="1" onclick="changePeriod(1)">1年</button>
+                    <button class="period-btn active" data-period="5" onclick="changePeriod(5)">5年</button>
+                    <button class="period-btn" data-period="10" onclick="changePeriod(10)">10年</button>
+                    <button class="period-btn" data-period="20" onclick="changePeriod(20)">20年</button>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>VIX - 恐怖指数</h3>
+                        <span class="chart-info">高いほど市場の不安が大きい</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="vixChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>SKEW - テールリスク</h3>
+                        <span class="chart-info">暴落リスクの予兆指標</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="skewChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Put/Call比率 - 市場センチメント</h3>
+                        <span class="chart-info">低いほど楽観的</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="putCallChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>ハイイールド債スプレッド</h3>
+                        <span class="chart-info">信用リスクの拡大を示す</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="hySpreadChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Shiller P/E - 株価割高感</h3>
+                        <span class="chart-info">景気調整後株価収益率</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="shillerChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>S&P500 200日移動平均線乖離率</h3>
+                        <span class="chart-info">トレンドの強さを測定</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="ma200Chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Fear & Greed Index</h3>
+                        <span class="chart-info">0=極度の恐怖、100=極度の強欲</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="fearGreedChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Buffett Indicator</h3>
+                        <span class="chart-info">株式時価総額/GDP比率</span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="buffettChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>&copy; 2025 Market Risk Dashboard | データは過去の実績値に基づくサンプルです</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="js/data.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
