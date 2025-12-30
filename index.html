@@ -282,11 +282,108 @@
         </footer>
     </div>
 
+    <!-- Analysis Modal -->
+    <div class="modal-overlay" id="analysisModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 id="modalTitle">指標分析</h2>
+            </div>
+            
+            <div class="modal-content">
+                <!-- Current Status -->
+                <div class="analysis-section">
+                    <h3><i class="fas fa-chart-bar"></i> 現在の市場データ</h3>
+                    <div class="market-data-grid">
+                        <div class="data-item">
+                            <span class="data-label">現在値</span>
+                            <span class="data-value" id="modalCurrentValue">--</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">ステータス</span>
+                            <span class="data-value" id="modalStatus">--</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">しきい値</span>
+                            <span class="data-value" id="modalThreshold">--</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-label">過去1週間の変化</span>
+                            <span class="data-value" id="modalWeekChange">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Sentiment -->
+                <div class="analysis-section">
+                    <h3><i class="fas fa-users"></i> 世論・センチメント分析</h3>
+                    <div class="sentiment-container">
+                        <div class="sentiment-gauge-wrapper">
+                            <div class="gauge-label">SNS感情スコア</div>
+                            <div class="sentiment-bar-container">
+                                <div class="sentiment-value-display">
+                                    <span class="sentiment-score" id="sentimentScore">--</span>
+                                    <span class="sentiment-label" id="sentimentLabel">---</span>
+                                </div>
+                                <div class="sentiment-bar-background">
+                                    <div class="sentiment-bar" id="sentimentGauge"></div>
+                                </div>
+                            </div>
+                            <div class="gauge-legend">
+                                <div class="legend-item"><span class="legend-color" style="background: #f85149;"></span>0-25: 極度の恐怖</div>
+                                <div class="legend-item"><span class="legend-color" style="background: #d29922;"></span>26-45: 恐怖</div>
+                                <div class="legend-item"><span class="legend-color" style="background: #6e7681;"></span>46-55: 中立</div>
+                                <div class="legend-item"><span class="legend-color" style="background: #58a6ff;"></span>56-75: 強欲</div>
+                                <div class="legend-item"><span class="legend-color" style="background: #3fb950;"></span>76-100: 極度の強欲</div>
+                            </div>
+                        </div>
+                        <div class="sentiment-keywords">
+                            <h4>トレンドキーワード</h4>
+                            <div class="keyword-tags" id="trendingKeywords">
+                                <!-- Dynamic content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cross Analysis -->
+                <div class="analysis-section">
+                    <h3><i class="fas fa-exchange-alt"></i> 市場データ × 世論の横断分析</h3>
+                    <div class="cross-analysis-content" id="crossAnalysisContent">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+
+                <!-- Historical Context -->
+                <div class="analysis-section">
+                    <h3><i class="fas fa-history"></i> 過去の類似局面との比較</h3>
+                    <div class="historical-comparison" id="historicalComparison">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+
+                <!-- Action Recommendations -->
+                <div class="analysis-section highlight">
+                    <h3><i class="fas fa-lightbulb"></i> 推奨アクション</h3>
+                    <div class="recommendations" id="recommendations">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="modal-close-btn" onclick="closeAnalysisModal()">
+                    <i class="fas fa-times"></i> 閉じる
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script src="js/data.js"></script>
     <script src="js/charts.js"></script>
+    <script src="js/analysis.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
