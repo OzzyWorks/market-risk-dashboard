@@ -69,6 +69,16 @@ function updateOverviewCards() {
             cardElement.style.borderColor = 'var(--border-primary)';
             cardElement.style.borderWidth = '1px';
         }
+        
+        // Add click handler to card (for analysis modal)
+        if (cardElement) {
+            cardElement.style.cursor = 'pointer';
+            cardElement.onclick = function() {
+                if (window.openAnalysisModal) {
+                    window.openAnalysisModal(key);
+                }
+            };
+        }
     }
 }
 
